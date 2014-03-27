@@ -1,0 +1,25 @@
+{
+  "name": "futjikato-tr-esb",
+  "version": "0.0.1",
+  "description": "Enterprise Server Bus for TR",
+  "main": "src/main.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "vows test/* --spec"
+  },
+  "author": "Moritz Spindelhirn",
+  "license": "proprietary",
+  "devDependencies": {
+    "vows": "^0.7.0",
+    "grunt": "^0.4.4",
+    "grunt-contrib-jshint": "^0.9.2",
+    "load-grunt-tasks": "^0.4.0",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-vows": "^0.4.0"
+  },
+  "dependencies": {
+    "extend": "^1.2.1"
+  }
+}
