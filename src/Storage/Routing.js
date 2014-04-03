@@ -2,7 +2,7 @@
     'use strict';
 
     var Errors = require('./../Errors'),
-        path = require('path');
+        Service = require('./../Service').Service;
 
     /**
      * ESB Router
@@ -21,157 +21,58 @@
         /**
          * Routing table
          *
-         * @type {Array}
+         * @type {{}}
          * @private
          */
-        this._routingTable = new RouterNode('/');
+        this._storage = {};
 
     }
 
     /**
+     * Checks if teh given service id is existing in the storage.
+     *
+     * @param {string} serviceId
+     *
+     * @return {boolean}
+     */
+    Router.prototype.has = function(serviceId) {
+        return !!this._storage[serviceId];
+    };
+
+    /**
      * Send the message object to the server responsible for handling the route.
      *
-     * @param {string} route
-     * @param {{}} messageObject
+     * @param {string} serviceId
+     *
+     * @return {Service}
      */
-    Router.prototype.target = function(route, messageObject) {
-        var lastServers = [],
-            routeKeys = route.split(path.sep);
-
-        var currentNode = this._routingTable;
-        routeKeys.forEach(function(key) {
-            if(key.length > 0) {
-                if(currentNode.children[key]) {
-                    currentNode = currentNode.children[key];
-                    lastServers = currentNode.servers;
-                }
-            }
-        });
-
-        if(lastServers.length === 0) {
-            // @todo make brotcast ( pun intended ) to all servers
-            throw new Errors.RouterException('Unable to find a server.');
+    Router.prototype.get = function(serviceId) {
+        if(!this._storage[serviceId]) {
+            throw new Error('Service not found. ' + serviceId);
         }
 
-        // @todo sever handling
+        return this._storage[serviceId];
     };
 
     /**
      * Publish a new route with a server to target on requests for the given route.
      *
-     * @param {string} route
-     * @param {{}} server
+     * @param {Service} service
      */
-    Router.prototype.publish = function(route, server) {
-        var node = new RouterNode(route);
-        node.addServer(server);
-
-        this._routingTable.addChild(node);
-    };
-
-    /**
-     * A node within the routing table
-     *
-     * @param {string} path
-     * @constructor
-     */
-    function RouterNode(path) {
-
-        /**
-         * Absolute routing path.
-         *
-         * @type {string}
-         */
-        this.path = path;
-
-        /**
-         * List of servers that accept requests for this path.
-         *
-         * @private
-         * @type {Array}
-         */
-        this.servers = [];
-
-        /**
-         * List of known child paths.
-         *
-         * @private
-         * @type {{}}
-         */
-        this.children = {};
-    }
-
-    /**
-     * Returns an array with all children nodes.
-     *
-     * @returns {RouterNode[]}
-     */
-    RouterNode.prototype.getChildren = function() {
-        var $this = this;
-        var ary = [];
-        Object.keys(this.children).forEach(function(key) {
-            if($this.children.hasOwnProperty(key) && $this.children[key] instanceof RouterNode) {
-                ary.push($this.children[key]);
-            }
-        });
-
-        return ary;
-    };
-
-    /**
-     * Add a child node
-     *
-     * @param {RouterNode} node
-     */
-    RouterNode.prototype.addChild = function(node) {
-        var relPath = path.relative(this.path, node.path),
-            pathAry = relPath.split(path.sep);
-
-        // get key for next node from here
-        var key = pathAry.shift();
-
-        // it is not allowed to traverse to parent nodes
-        if(key.substr(0, 1) === '.') {
-            throw new Error('Invalid path name.');
+    Router.prototype.add = function(service) {
+        if(!service instanceof Service) {
+            throw new Error('Service storage only can contain instances of the Service prototype.');
         }
 
-        // Sorry node, but your destination is in another castle.
-        if(pathAry.length > 0) {
-            // create next node if not present
-            if(!this.children[key]) {
-                var parentPath = path.join(this.path, key);
-                var parentNode = new RouterNode(parentPath);
-
-                this.addChild(parentNode);
-            }
-
-            // delegate to next node in chain
-            this.children[key].addChild(node);
-            return;
+        if(this._storage[service.id]) {
+            throw new Error('Service ID is already in use: ' + service.id);
         }
 
-        // check if node already exists
-        if(this.children[key]) {
-            throw new Error('Route for given path already exists.');
-        }
-
-        // insert node
-        this.children[key] = node;
-    };
-
-    /**
-     * Add a server to the node.
-     *
-     * @param {{}} server
-     */
-    RouterNode.prototype.addServer = function(server) {
-        // @todo parameter validation
-        this.servers.push(server);
+        this._storage[service.id] = service;
     };
 
     // export modules
     module.exports = {
-        Router: Router,
-        RouterNode: RouterNode
+        Router: Router
     };
 })(module);

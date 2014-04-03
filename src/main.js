@@ -1,26 +1,20 @@
 /**
  * Futjikato TR ESB
  */
-var extend = require('extend');
+(function() {
+    'use strict';
 
-// @todo First read configuration from config file
-var defaults = {
-    intercomTcpPort: 9987
-};
-var config = extend({}, defaults, {});
+    var extend = require('extend');
 
-// Start a new routing storage
-var Router = require('./../src/Storage/Routing').Router,
-    router = new Router();
+    // @todo First read configuration from config file
+    var defaults = {
+        intercomTcpPort: 9987
+    };
+    var config = extend({}, defaults, {});
 
-// Start the inter-service-communication server
-var InterCom = require('./Server/InterCom').InterCom,
-    comServer = new InterCom(config.intercomTcpPort);
+    // Start a new routing storage
+    var Router = require('./../src/Storage/Routing').Router,
+        router = new Router();
 
-comServer.on('registerService', function() {
-    console.log('new service registered');
-});
 
-comServer.on('registerService', function() {
-    console.log('new service registered');
-});
+})();

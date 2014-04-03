@@ -33,5 +33,5 @@ module.exports = function (grunt) {
     // Default task
     grunt.registerTask('default', ['watch']);
 
-    grunt.registerTask('build', ['jshint', 'vows']);
+    grunt.registerTask('test', ['jshint', 'vows']);
 };
