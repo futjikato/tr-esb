@@ -8,13 +8,14 @@
 
     // @todo First read configuration from config file
     var defaults = {
-        intercomTcpPort: 9987
+        ports: {
+            intercomhttp: 9989
+        }
     };
     var config = extend({}, defaults, {});
 
-    // Start a new routing storage
-    var Router = require('./../src/Storage/Routing').Router,
-        router = new Router();
+    var InterCom = require('./InterCom').InterCom,
+        com = new InterCom(config);
 
-
+    com.work();
 })();
