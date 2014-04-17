@@ -33,7 +33,6 @@
             topic: function() {
                 var $this = this;
                 releaser(function() {
-                    console.log('inside');
                     $this.callback(null, new Service('FAKE-SERVICE', 'localhost:9989'));
                 });
             },
