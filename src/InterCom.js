@@ -1,35 +1,25 @@
 (function(module) {
     'use strict';
 
-    var http = require('http');
+    var http = require('http'),
+        url = require('url'),
+        config = require('./Config');
 
     /**
-     * Inter-Service-Communication Server.
-     * HTTP server for services and clients to connect to.
+     * Inter-Service-Communication manager class.
+     * Stats the InterCom-Server
      *
-     * @param {int} port
      * @constructor
      */
-    function ComServer(port) {
-        this.port = port;
+    function InterCom(cb) {
+        if(typeof cb !== 'function') {
+            cb = function() {};
+        }
+
+        this.port = config.intercomhttp;
         this.server = http.createServer(this.accept);
-    }
-
-    /**
-     * Start listening on the port given at initialization.
-     *
-     * @param {function} cb
-     */
-    ComServer.prototype.listen = function(cb) {
         this.server.listen(this.port, cb);
-    };
-
-    /**
-     * Stop listening
-     */
-    ComServer.prototype.stop = function() {
-        this.server.close();
-    };
+    }
 
     /**
      * Accept method is called for every incoming connection.
@@ -39,31 +29,51 @@
      * @param {http.ClientRequest} req
      * @param {http.ServerResponse} res
      */
-    ComServer.prototype.accept = function(req, res) {
-        res.writeHead(200);
+    InterCom.prototype.accept = function(req, res) {
+        var parsedUrl = url.parse(res.url);
+
+        if(!this.validateAccessToken(req.headers['Esb-Access-Token'])) {
+            res.writeHead(403, 'Invalid access token');
+            res.end();
+            return;
+        }
+
+        if(!this.validateServiceKey(req.headers['Service-Key'])) {
+            res.writeHead(403, 'Invalid service key');
+            res.end();
+            return;
+        }
+
+        res.writeHead(404, 'Unknown path.');
         res.end();
     };
 
     /**
-     * Inter-Service-Communication manager class.
-     * Stats the InterCom-Server
+     * Validate the access token.
+     * Uses Config module for validation.
      *
-     * @param {{}} config
-     * @constructor
+     * @param {string} token
+     * @returns {boolean}
      */
-    function InterCom(config) {
-        this.config = config;
-
-        this.server = new ComServer(config.ports.intercomhttp);
-    }
+    InterCom.prototype.validateAccessToken = function(token) {
+        return (
+            token &&
+            typeof token === 'string' &&
+            token === config.accesstoken
+        );
+    };
 
     /**
-     * Enable Inter-Service-Communication.
      *
-     * @param cb
+     * @param key
+     * @returns {*|boolean}
      */
-    InterCom.prototype.work = function(cb) {
-        this.server.listen(cb);
+    InterCom.prototype.validateServiceKey = function(key) {
+        return (
+            key &&
+            typeof key === 'string' &&
+            key.length > 3
+        );
     };
 
     /**
@@ -74,7 +84,6 @@
     };
 
     module.exports = {
-        ComServer: ComServer,
         InterCom: InterCom
     };
 })(module);
