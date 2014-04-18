@@ -9,13 +9,25 @@
      *
      * @constructor
      */
-    function RouterException() {
-        Error.call(this);
+    function RouterException(msg) {
+        Error.call(this, msg);
     }
     util.inherits(RouterException, Error);
 
+    /**
+     * InterCom Exception
+     * Thrown if an error happened in the InterCom.
+     *
+     * @constructor
+     */
+    function InterComException(msg) {
+        Error.call(this, msg);
+    }
+    util.inherits(InterComException, Error);
+
     // export all application Exceptions
     module.exports = {
-        RouterException: RouterException
+        RouterException: RouterException,
+        InterComException: InterComException
     };
 })(module);
