@@ -13,10 +13,6 @@
     config.set('intercomhttp', 9912);
     config.set('accesstoken', 'TESTACCESS');
 
-    process.on('uncaughtException', function (err) {
-        console.log('Caught exception: ' + err);
-    });
-
     vows.describe('ESB InterCom').addBatch({
         'Start a InterCom HTTP server.': {
             topic: function () {

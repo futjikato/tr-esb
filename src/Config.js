@@ -8,7 +8,7 @@
     // define defaults
     var defaults = {
         intercomhttp: 9989
-        // accesstoken: No default for secrets cause people are stupid and do not change this
+        // accesstoken:  No default for secrets cause people are stupid and do not change this
     };
 
     var readConfig = {};

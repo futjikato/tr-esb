@@ -8,6 +8,4 @@
 
     var InterCom = require('./InterCom').InterCom,
         com = new InterCom();
-
-    com.work();
 })();

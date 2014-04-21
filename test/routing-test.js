@@ -4,7 +4,7 @@
     var vows = require('vows'),
         assert = require('assert');
 
-    var Router = require('./../src/Storage/Routing').Router,
+    var Router = require('./../src/Routing').Router,
         Service = require('./../src/Service').Service;
 
     var Errors = require('./../src/Errors');

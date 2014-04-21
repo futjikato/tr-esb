@@ -1,8 +1,8 @@
 (function(module) {
     'use strict';
 
-    var Errors = require('./../Errors'),
-        Service = require('./../Service').Service;
+    var Errors = require('./Errors'),
+        Service = require('./Service').Service;
 
     /**
      * ESB Router
@@ -52,6 +52,20 @@
         }
 
         return this._storage[serviceId];
+    };
+
+    /**
+     * Returns a list of known service keys.
+     *
+     * @returns {string[]}
+     */
+    Router.prototype.getList = function() {
+        var list = [];
+        for(var serviceKey in this._storage) {
+            list.push(serviceKey);
+        }
+
+        return list;
     };
 
     /**
