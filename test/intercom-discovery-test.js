@@ -60,6 +60,29 @@
                 }
             },
 
+            'PUT the same service ID twice': {
+                topic: function () {
+                    request.put({
+                        url: {
+                            protocol: 'http:',
+                            hostname: 'localhost',
+                            port: 9912,
+                            pathname: '/discovery'
+                        },
+                        headers: {
+                            'Service-Key': 'VOWSJS-TESTSERVICE',
+                            'Esb-Access-Token': 'TESTACCESS',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ip:'127.0.0.1', port:9913})
+                    }, this.callback);
+                },
+
+                'with a "409" status code': function(resp) {
+                    assert.equal(resp.statusCode, 409);
+                }
+            },
+
             teardown : function (intercom) {
                 intercom.stop();
             }
